@@ -1,0 +1,482 @@
+import { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  IconButton,
+  Card,
+  CardContent,
+  TextField,
+  Switch,
+  Slider,
+  Chip,
+  Avatar,
+  LinearProgress,
+  CircularProgress,
+  FormControlLabel,
+  Checkbox,
+  Radio,
+  RadioGroup,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  Paper,
+  Divider,
+  Alert,
+  ToggleButton,
+  ToggleButtonGroup,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Tabs,
+  Tab,
+  AppBar,
+  Toolbar,
+  Breadcrumbs,
+  Link
+} from '@mui/material';
+import {
+  PlayArrow,
+  Pause,
+  VolumeUp,
+  Settings,
+  Favorite,
+  Share,
+  ExpandMore,
+  Home,
+  LibraryMusic,
+  Search,
+  AccountCircle,
+  Menu as MenuIcon
+} from '@mui/icons-material';
+import { motion } from 'framer-motion';
+import { useTheme } from '@mui/material/styles';
+import { AnimatedLogo } from './AnimatedLogo';
+import { useLogger } from '../hooks/useLogger';
+
+export function ThemeShowcase() {
+  const theme = useTheme();
+  const { logUserAction } = useLogger('ThemeShowcase');
+  const [tabValue, setTabValue] = useState(0);
+  const [sliderValue, setSliderValue] = useState(50);
+  const [speedDialOpen, setSpeedDialOpen] = useState(false);
+  const [toggleValue, setToggleValue] = useState<string>('view1');
+  const [accordionExpanded, setAccordionExpanded] = useState<string | false>(false);
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+    logUserAction('tab_changed', { tabIndex: newValue });
+  };
+
+  const actions = [
+    { icon: <PlayArrow />, name: 'Play' },
+    { icon: <Pause />, name: 'Pause' },
+    { icon: <VolumeUp />, name: 'Volume' },
+    { icon: <Settings />, name: 'Settings' },
+  ];
+
+  return (
+    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <AppBar position="static" sx={{ mb: 4, borderRadius: 2 }}>
+          <Toolbar>
+            <AnimatedLogo size={40} showText />
+            <Box sx={{ flexGrow: 1 }} />
+            <IconButton color="inherit">
+              <Search />
+            </IconButton>
+            <IconButton color="inherit">
+              <AccountCircle />
+            </IconButton>
+            <IconButton color="inherit">
+              <MenuIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+      </motion.div>
+
+      {/* Navigation Breadcrumbs */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+      >
+        <Breadcrumbs sx={{ mb: 3 }}>
+          <Link underline="hover" color="inherit" href="#">
+            <Home sx={{ mr: 0.5, fontSize: 'inherit' }} />
+            Home
+          </Link>
+          <Link underline="hover" color="inherit" href="#">
+            Showcase
+          </Link>
+          <Typography color="text.primary">Theme Demo</Typography>
+        </Breadcrumbs>
+      </motion.div>
+
+      <Typography variant="h3" component="h1" gutterBottom sx={{ mb: 4, textAlign: 'center' }}>
+        MediaPlayer Theme Showcase
+      </Typography>
+
+      {/* Navigation Tabs */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+      >
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
+          <Tabs value={tabValue} onChange={handleTabChange}>
+            <Tab label="Components" />
+            <Tab label="Forms" />
+            <Tab label="Media Controls" />
+            <Tab label="Layout" />
+          </Tabs>
+        </Box>
+      </motion.div>
+
+      <Grid container spacing={4}>
+        {/* Tab Panel 1: Components */}
+        {tabValue === 0 && (
+          <>
+            {/* Buttons */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Buttons</Typography>
+                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+                      <Button variant="contained" startIcon={<PlayArrow />}>
+                        Play
+                      </Button>
+                      <Button variant="outlined" startIcon={<Pause />}>
+                        Pause
+                      </Button>
+                      <Button variant="text" startIcon={<Favorite />}>
+                        Like
+                      </Button>
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                      <IconButton color="primary">
+                        <PlayArrow />
+                      </IconButton>
+                      <IconButton color="secondary">
+                        <VolumeUp />
+                      </IconButton>
+                      <IconButton>
+                        <Share />
+                      </IconButton>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+
+            {/* Progress & Loading */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Progress & Loading</Typography>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="body2" gutterBottom>Linear Progress</Typography>
+                      <LinearProgress variant="determinate" value={65} sx={{ mb: 1 }} />
+                      <LinearProgress variant="indeterminate" sx={{ mb: 2 }} />
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                      <CircularProgress size={30} />
+                      <CircularProgress variant="determinate" value={75} size={30} />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+
+            {/* Chips & Avatars */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Chips & Avatars</Typography>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                      <Chip label="Pop" color="primary" />
+                      <Chip label="Rock" color="secondary" />
+                      <Chip label="Jazz" variant="outlined" />
+                      <Chip label="Classical" onDelete={() => {}} />
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Avatar>U</Avatar>
+                      <Avatar sx={{ bgcolor: theme.palette.secondary.main }}>M</Avatar>
+                      <Avatar src="/placeholder-avatar.jpg" />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+
+            {/* Alerts */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Alerts</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <Alert severity="success">Media file loaded successfully!</Alert>
+                      <Alert severity="warning">Low audio quality detected</Alert>
+                      <Alert severity="error">Failed to connect to media server</Alert>
+                      <Alert severity="info">New playlist feature available</Alert>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+          </>
+        )}
+
+        {/* Tab Panel 2: Forms */}
+        {tabValue === 1 && (
+          <>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Form Controls</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <TextField label="Playlist Name" variant="outlined" />
+                      <TextField label="Search Media" variant="filled" />
+                      <FormControl>
+                        <InputLabel>Category</InputLabel>
+                        <Select label="Category" defaultValue="">
+                          <MenuItem value="music">Music</MenuItem>
+                          <MenuItem value="video">Video</MenuItem>
+                          <MenuItem value="podcast">Podcast</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Controls</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <FormControlLabel control={<Switch defaultChecked />} label="Auto-play" />
+                      <FormControlLabel control={<Checkbox defaultChecked />} label="Shuffle" />
+                      <Typography gutterBottom>Volume</Typography>
+                      <Slider
+                        value={sliderValue}
+                        onChange={(_, value) => setSliderValue(value as number)}
+                        valueLabelDisplay="auto"
+                      />
+                      <RadioGroup defaultValue="normal">
+                        <FormControlLabel value="low" control={<Radio />} label="Low Quality" />
+                        <FormControlLabel value="normal" control={<Radio />} label="Normal Quality" />
+                        <FormControlLabel value="high" control={<Radio />} label="High Quality" />
+                      </RadioGroup>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+          </>
+        )}
+
+        {/* Tab Panel 3: Media Controls */}
+        {tabValue === 2 && (
+          <>
+            <Grid size={{ xs: 12}}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Media Player Controls</Typography>
+                    <Box sx={{ textAlign: 'center', p: 3 }}>
+                      <Typography variant="h5" gutterBottom>
+                        Now Playing: "Sample Track"
+                      </Typography>
+                      <LinearProgress variant="determinate" value={45} sx={{ mb: 3 }} />
+                      
+                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 3 }}>
+                        <IconButton size="large">
+                          <PlayArrow fontSize="large" />
+                        </IconButton>
+                        <IconButton size="large">
+                          <Pause fontSize="large" />
+                        </IconButton>
+                        <IconButton size="large">
+                          <VolumeUp fontSize="large" />
+                        </IconButton>
+                      </Box>
+
+                      <ToggleButtonGroup
+                        value={toggleValue}
+                        exclusive
+                        onChange={(_, value) => setToggleValue(value)}
+                      >
+                        <ToggleButton value="list">
+                          <LibraryMusic />
+                        </ToggleButton>
+                        <ToggleButton value="view1">
+                          <Home />
+                        </ToggleButton>
+                        <ToggleButton value="view2">
+                          <Settings />
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+          </>
+        )}
+
+        {/* Tab Panel 4: Layout */}
+        {tabValue === 3 && (
+          <>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+              >
+                <Paper sx={{ p: 2 }}>
+                  <Typography variant="h6" gutterBottom>Navigation</Typography>
+                  <List>
+                    <ListItem>
+                      <ListItemIcon><Home /></ListItemIcon>
+                      <ListItemText primary="Home" />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon><LibraryMusic /></ListItemIcon>
+                      <ListItemText primary="Library" />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon><Search /></ListItemIcon>
+                      <ListItemText primary="Search" />
+                    </ListItem>
+                  </List>
+                </Paper>
+              </motion.div>
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 8 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Accordion 
+                    expanded={accordionExpanded === 'panel1'}
+                    onChange={(_, expanded) => setAccordionExpanded(expanded ? 'panel1' : false)}
+                  >
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Typography>Recent Playlists</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Typography>
+                        Your recently played playlists will appear here with quick access controls.
+                      </Typography>
+                    </AccordionDetails>
+                  </Accordion>
+
+                  <Accordion 
+                    expanded={accordionExpanded === 'panel2'}
+                    onChange={(_, expanded) => setAccordionExpanded(expanded ? 'panel2' : false)}
+                  >
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Typography>Recommended</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Typography>
+                        AI-powered recommendations based on your listening history and preferences.
+                      </Typography>
+                    </AccordionDetails>
+                  </Accordion>
+                </Box>
+              </motion.div>
+            </Grid>
+          </>
+        )}
+      </Grid>
+
+      {/* Floating Action Button */}
+      <SpeedDial
+        ariaLabel="Media Controls"
+        sx={{ position: 'fixed', bottom: 16, right: 16 }}
+        icon={<SpeedDialIcon />}
+        open={speedDialOpen}
+        onOpen={() => setSpeedDialOpen(true)}
+        onClose={() => setSpeedDialOpen(false)}
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+            onClick={() => {
+              logUserAction('speed_dial_action', { action: action.name });
+              setSpeedDialOpen(false);
+            }}
+          />
+        ))}
+      </SpeedDial>
+
+      {/* Footer */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+      >
+        <Divider sx={{ my: 4 }} />
+        <Typography variant="body2" color="text.secondary" align="center">
+          MediaPlayer Theme Showcase - {theme.palette.mode === 'dark' ? 'Dark' : 'Light'} Mode
+        </Typography>
+      </motion.div>
+    </Box>
+  );
+}
