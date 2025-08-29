@@ -35,12 +35,10 @@ export function AnimatedLogo({ size = 60, showText = false }: AnimatedLogoProps)
     idle: {
       scale: 1,
       rotate: 0,
-      filter: 'drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.1))',
     },
     hover: {
       scale: 1.1,
       rotate: 5,
-      filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.2))',
       transition: { type: 'spring' as const, stiffness: 300, damping: 20 },
     },
     tap: {
@@ -61,6 +59,7 @@ export function AnimatedLogo({ size = 60, showText = false }: AnimatedLogoProps)
 
   const primaryColor = theme.palette.primary.main;
   const secondaryColor = theme.palette.secondary.main;
+  const contrastOnPrimary = theme.palette.getContrastText(primaryColor);
 
   // Ensure numeric size and stable coordinates
   const S = Number.isFinite(size) && size! > 0 ? size! : 60;
@@ -75,7 +74,16 @@ export function AnimatedLogo({ size = 60, showText = false }: AnimatedLogoProps)
       onHoverStart={handleHoverStart}
       onHoverEnd={handleHoverEnd}
       onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
       variants={logoVariants}
+      role="button"
+      tabIndex={0}
+      aria-label="MediaPlayer Logo"
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -88,7 +96,7 @@ export function AnimatedLogo({ size = 60, showText = false }: AnimatedLogoProps)
       <motion.svg
         width={S}
         height={S}
-        viewBox="0 0 100 100"
+        viewBox="0 0 100 100"        
         style={{ overflow: 'visible', display: 'block' }}
         // Ensure the wrapper handles interactions
         pointerEvents="none"
@@ -99,14 +107,18 @@ export function AnimatedLogo({ size = 60, showText = false }: AnimatedLogoProps)
             <stop offset="70%" stopColor={secondaryColor} />
             <stop offset="100%" stopColor="#ffffff" stopOpacity={0.6} />
           </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
         </defs>
+
+        {/* High-contrast outer ring to improve separation on blue backgrounds */}
+        <circle
+          cx={50}
+          cy={50}
+          r={baseR + 3}
+          fill="none"
+          stroke={contrastOnPrimary}
+          strokeWidth={3}
+          opacity={0.9}
+        />
 
         {/* Main pulse circle, numeric attrs only */}
         <motion.circle
@@ -114,7 +126,6 @@ export function AnimatedLogo({ size = 60, showText = false }: AnimatedLogoProps)
           cy={50}
           r={baseR}
           fill="url(#logoGradient)"
-          filter="url(#glow)"
           initial={{ r: baseR, opacity: 0.9 }}
           animate={{ r: [baseR, baseR + 2, baseR], opacity: [0.9, 1, 0.9] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -123,7 +134,10 @@ export function AnimatedLogo({ size = 60, showText = false }: AnimatedLogoProps)
         {/* Play triangle */}
         <motion.path
           d="M 40 35 L 40 65 L 65 50 Z"
-          fill="white"
+          fill={contrastOnPrimary}
+          stroke="#000000"
+          strokeOpacity={0.25}
+          strokeWidth={1}
           initial={{ scale: 1, x: 0 }}
           animate={{ scale: [1, 1.05, 1], x: [0, 1, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
@@ -180,12 +194,9 @@ export function AnimatedLogo({ size = 60, showText = false }: AnimatedLogoProps)
             marginLeft: 12,
             fontFamily: theme.typography.fontFamily,
             fontSize: S * 0.3,
-            fontWeight: 600,
-            color: theme.palette.text.primary,
-            background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
+            fontWeight: 700,
+            color: theme.palette.mode === 'dark' ? theme.palette.common.white : contrastOnPrimary,
+            textShadow: '0 0 4px rgba(0,0,0,0.35)',
             pointerEvents: 'none',
           }}
         >

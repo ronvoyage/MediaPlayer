@@ -1,0 +1,91 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e5]:
+  - banner [ref=e7]:
+    - generic [ref=e8]:
+      - button "MediaPlayer Logo" [ref=e9] [cursor=pointer]:
+        - img
+        - generic: MediaPlayer
+      - button "toggle theme" [ref=e10] [cursor=pointer]:
+        - img [ref=e11] [cursor=pointer]
+      - button [ref=e13] [cursor=pointer]:
+        - img [ref=e14] [cursor=pointer]
+      - button [ref=e16] [cursor=pointer]:
+        - img [ref=e17] [cursor=pointer]
+      - button [ref=e19] [cursor=pointer]:
+        - img [ref=e20] [cursor=pointer]
+  - navigation [ref=e23]:
+    - list [ref=e24]:
+      - listitem [ref=e25]:
+        - link "Home" [ref=e26] [cursor=pointer]:
+          - /url: "#"
+          - img [ref=e27] [cursor=pointer]
+          - text: Home
+      - listitem [ref=e29]: /
+      - listitem [ref=e30]:
+        - link "Showcase" [ref=e31] [cursor=pointer]:
+          - /url: "#"
+      - listitem [ref=e32]: /
+      - listitem [ref=e33]:
+        - paragraph [ref=e34]: Theme Demo
+  - heading "MediaPlayer Theme Showcase" [level=1] [ref=e35]
+  - tablist [ref=e40]:
+    - tab "Components" [ref=e41] [cursor=pointer]: Components
+    - tab "Forms" [ref=e42] [cursor=pointer]
+    - tab "Media Controls" [ref=e43] [cursor=pointer]
+    - tab "Layout" [ref=e44] [cursor=pointer]: Layout
+    - tab "Design" [active] [selected] [ref=e45] [cursor=pointer]: Design
+  - generic [ref=e47]:
+    - generic [ref=e51]:
+      - heading "Theme" [level=6] [ref=e52]
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]: Theme
+          - generic [ref=e56]:
+            - combobox "Theme" [ref=e57] [cursor=pointer]: Classic
+            - textbox: classic
+            - img
+            - group:
+              - generic: Theme
+        - generic [ref=e58] [cursor=pointer]:
+          - switch "Light" [ref=e61] [cursor=pointer]
+          - generic [ref=e64] [cursor=pointer]: Light
+    - generic [ref=e68]:
+      - heading "Typography" [level=6] [ref=e69]
+      - heading "H1 Heading" [level=1] [ref=e70]
+      - heading "H2 Heading" [level=2] [ref=e71]
+      - heading "H3 Heading" [level=3] [ref=e72]
+      - heading "H4 Heading" [level=4] [ref=e73]
+      - heading "H5 Heading" [level=5] [ref=e74]
+      - heading "H6 Heading" [level=6] [ref=e75]
+      - paragraph [ref=e76]: Body1 — The quick brown fox jumps over the lazy dog.
+      - paragraph [ref=e77]: Body2 — The quick brown fox jumps over the lazy dog.
+    - generic [ref=e81]:
+      - heading "Color Palette" [level=6] [ref=e82]
+      - generic [ref=e83]:
+        - generic [ref=e85]: "#42A5F5"
+        - generic [ref=e87]: "#1565C0"
+        - generic [ref=e89]: "#0D47A1"
+        - generic [ref=e91]: "#FFB74D"
+        - generic [ref=e93]: "#FFA726"
+        - generic [ref=e95]: "#FB8C00"
+        - generic [ref=e97]: "#FAFAFA"
+        - generic [ref=e99]: "#FFFFFF"
+        - generic [ref=e101]: "#212121"
+        - generic [ref=e103]: "#757575"
+        - generic [ref=e105]: "#2E7D32"
+        - generic [ref=e107]: "#F57C00"
+        - generic [ref=e109]: "#D32F2F"
+        - generic [ref=e111]: "#0288D1"
+  - button "Media Controls" [ref=e112] [cursor=pointer]:
+    - img [ref=e114] [cursor=pointer]
+  - menu:
+    - menuitem "Play"
+    - menuitem "Pause"
+    - menuitem "Volume"
+    - menuitem "Settings"
+  - generic [ref=e116]:
+    - separator [ref=e117]
+    - paragraph [ref=e118]: MediaPlayer Theme Showcase - Light Mode
+```

@@ -56,14 +56,27 @@ import {
   LibraryMusic,
   Search,
   AccountCircle,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  Brightness4,
+  Brightness7,
+  BugReport,
+  PlayCircle
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useTheme } from '@mui/material/styles';
 import { AnimatedLogo } from './AnimatedLogo';
 import { useLogger } from '../hooks/useLogger';
+import { LoggingDashboard } from './LoggingDashboard';
 
-export function ThemeShowcase() {
+interface ThemeShowcaseProps {
+  onToggleTheme?: () => void;
+  isDark?: boolean;
+  themeName?: string;
+  themeOptions?: Array<{ value: string; label: string }>;
+  onSelectTheme?: (value: any) => void;
+}
+
+export function ThemeShowcase({ onToggleTheme, isDark, themeName, themeOptions = [], onSelectTheme }: ThemeShowcaseProps) {
   const theme = useTheme();
   const { logUserAction } = useLogger('ThemeShowcase');
   const [tabValue, setTabValue] = useState(0);
@@ -71,6 +84,7 @@ export function ThemeShowcase() {
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
   const [toggleValue, setToggleValue] = useState<string>('view1');
   const [accordionExpanded, setAccordionExpanded] = useState<string | false>(false);
+  const [isLoggingDashboardOpen, setIsLoggingDashboardOpen] = useState(false);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -85,7 +99,7 @@ export function ThemeShowcase() {
   ];
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ p: 3, width: '100%', maxWidth: 1200, mx: 'auto' }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -93,9 +107,16 @@ export function ThemeShowcase() {
         transition={{ duration: 0.6 }}
       >
         <AppBar position="static" sx={{ mb: 4, borderRadius: 2 }}>
-          <Toolbar>
+          <Toolbar sx={{ width: '100%', maxWidth: 1200, mx: 'auto' }}>
             <AnimatedLogo size={40} showText />
             <Box sx={{ flexGrow: 1 }} />
+            {/* Theme toggle in app bar */}
+            <IconButton color="inherit" onClick={onToggleTheme} aria-label="toggle theme">
+              {isDark ? <Brightness7 /> : <Brightness4 />}
+            </IconButton>
+            <IconButton color="inherit" component="a" href="/mediaplayer" title="Open Media Player">
+              <PlayCircle />
+            </IconButton>
             <IconButton color="inherit">
               <Search />
             </IconButton>
@@ -105,6 +126,16 @@ export function ThemeShowcase() {
             <IconButton color="inherit">
               <MenuIcon />
             </IconButton>
+            {/* Logging Dashboard Button (Development Only) */}
+            {import.meta.env.DEV && (
+              <IconButton 
+                onClick={() => setIsLoggingDashboardOpen(true)} 
+                color="inherit"
+                title="Open Logging Dashboard"
+              >
+                <BugReport />
+              </IconButton>
+            )}
           </Toolbar>
         </AppBar>
       </motion.div>
@@ -143,6 +174,7 @@ export function ThemeShowcase() {
             <Tab label="Forms" />
             <Tab label="Media Controls" />
             <Tab label="Layout" />
+            <Tab label="Design" />
           </Tabs>
         </Box>
       </motion.div>
@@ -253,6 +285,104 @@ export function ThemeShowcase() {
                       <Alert severity="warning">Low audio quality detected</Alert>
                       <Alert severity="error">Failed to connect to media server</Alert>
                       <Alert severity="info">New playlist feature available</Alert>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+          </>
+        )}
+
+        {/* Tab Panel 5: Design */}
+        {tabValue === 4 && (
+          <>
+            <Grid size={{ xs: 12 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+              >
+                <Card sx={{ mb: 3 }}>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Theme</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                      <FormControl size="small" sx={{ minWidth: 220 }}>
+                        <InputLabel id="theme-select-label">Theme</InputLabel>
+                        <Select
+                          labelId="theme-select-label"
+                          label="Theme"
+                          value={themeName || ''}
+                          onChange={(e) => onSelectTheme?.(e.target.value)}
+                        >
+                          {(themeOptions || []).map((opt) => (
+                            <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControlLabel control={<Switch checked={!!isDark} onChange={onToggleTheme} />} label={isDark ? 'Dark' : 'Light'} />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Typography</Typography>
+                    <Typography variant="h1">H1 Heading</Typography>
+                    <Typography variant="h2">H2 Heading</Typography>
+                    <Typography variant="h3">H3 Heading</Typography>
+                    <Typography variant="h4">H4 Heading</Typography>
+                    <Typography variant="h5">H5 Heading</Typography>
+                    <Typography variant="h6">H6 Heading</Typography>
+                    <Typography variant="body1" sx={{ mt: 2 }}>Body1 — The quick brown fox jumps over the lazy dog.</Typography>
+                    <Typography variant="body2">Body2 — The quick brown fox jumps over the lazy dog.</Typography>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Color Palette</Typography>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 2, px: 1 }}>
+                      {[
+                        // Primary scale
+                        theme.palette.primary.light,
+                        theme.palette.primary.main,
+                        theme.palette.primary.dark,
+                        // Secondary scale
+                        theme.palette.secondary.light,
+                        theme.palette.secondary.main,
+                        theme.palette.secondary.dark,
+                        // Background + text
+                        theme.palette.background.default,
+                        theme.palette.background.paper,
+                        theme.palette.text.primary as any,
+                        theme.palette.text.secondary as any,
+                        // Status colors
+                        theme.palette.success.main,
+                        theme.palette.warning.main,
+                        theme.palette.error.main,
+                        (theme.palette.info?.main || theme.palette.primary.light),
+                      ].map((color, i) => (
+                        <Box key={i} sx={{ p: 1, minHeight: 72, bgcolor: color, borderRadius: 1.5, border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Typography variant="caption" sx={{ color: theme.palette.getContrastText(String(color)), fontWeight: 600, whiteSpace: 'nowrap', px: 0.5 }}>
+                            {String(color).toUpperCase()}
+                          </Typography>
+                        </Box>
+                      ))}
                     </Box>
                   </CardContent>
                 </Card>
@@ -403,7 +533,7 @@ export function ThemeShowcase() {
               </motion.div>
             </Grid>
 
-            <Grid size={{ xs: 12, md: 8 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -465,6 +595,12 @@ export function ThemeShowcase() {
           />
         ))}
       </SpeedDial>
+
+      {/* Logging Dashboard */}
+      <LoggingDashboard 
+        isOpen={isLoggingDashboardOpen} 
+        onClose={() => setIsLoggingDashboardOpen(false)} 
+      />
 
       {/* Footer */}
       <motion.div

@@ -1,0 +1,108 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e5]:
+  - banner [ref=e7]:
+    - generic [ref=e8]:
+      - button "MediaPlayer Logo" [ref=e9] [cursor=pointer]:
+        - img
+        - generic: MediaPlayer
+      - button "toggle theme" [ref=e10] [cursor=pointer]:
+        - img [ref=e11] [cursor=pointer]
+      - button [ref=e13] [cursor=pointer]:
+        - img [ref=e14] [cursor=pointer]
+      - button [ref=e16] [cursor=pointer]:
+        - img [ref=e17] [cursor=pointer]
+      - button [ref=e19] [cursor=pointer]:
+        - img [ref=e20] [cursor=pointer]
+  - navigation [ref=e23]:
+    - list [ref=e24]:
+      - listitem [ref=e25]:
+        - link "Home" [ref=e26]:
+          - /url: "#"
+          - img [ref=e27]
+          - text: Home
+      - listitem [ref=e29]: /
+      - listitem [ref=e30]:
+        - link "Showcase" [ref=e31]:
+          - /url: "#"
+      - listitem [ref=e32]: /
+      - listitem [ref=e33]:
+        - paragraph [ref=e34]: Theme Demo
+  - heading "MediaPlayer Theme Showcase" [level=1] [ref=e35]
+  - tablist [ref=e40]:
+    - tab "Components" [selected] [ref=e41] [cursor=pointer]
+    - tab "Forms" [ref=e42] [cursor=pointer]
+    - tab "Media Controls" [ref=e43] [cursor=pointer]
+    - tab "Layout" [ref=e44] [cursor=pointer]
+    - tab "Design" [ref=e45] [cursor=pointer]
+  - generic [ref=e47]:
+    - generic [ref=e51]:
+      - heading "Buttons" [level=6] [ref=e52]
+      - generic [ref=e53]:
+        - button "Play" [ref=e54] [cursor=pointer]:
+          - img [ref=e56] [cursor=pointer]
+          - text: Play
+        - button "Pause" [ref=e58] [cursor=pointer]:
+          - img [ref=e60] [cursor=pointer]
+          - text: Pause
+        - button "Like" [ref=e62] [cursor=pointer]:
+          - img [ref=e64] [cursor=pointer]
+          - text: Like
+      - generic [ref=e66]:
+        - button [ref=e67] [cursor=pointer]:
+          - img [ref=e68] [cursor=pointer]
+        - button [ref=e70] [cursor=pointer]:
+          - img [ref=e71] [cursor=pointer]
+        - button [ref=e73] [cursor=pointer]:
+          - img [ref=e74] [cursor=pointer]
+    - generic [ref=e79]:
+      - heading "Progress & Loading" [level=6] [ref=e80]
+      - generic [ref=e81]:
+        - paragraph [ref=e82]: Linear Progress
+        - progressbar [ref=e83]
+        - progressbar [ref=e85]
+      - generic [ref=e88]:
+        - progressbar [ref=e89]:
+          - img [ref=e90]
+        - progressbar [ref=e92]:
+          - img [ref=e93]
+    - generic [ref=e98]:
+      - heading "Chips & Avatars" [level=6] [ref=e99]
+      - generic [ref=e100]:
+        - generic [ref=e102]: Pop
+        - generic [ref=e104]: Rock
+        - generic [ref=e106]: Jazz
+        - button "Classical" [ref=e107]:
+          - generic [ref=e108]: Classical
+          - img [ref=e109] [cursor=pointer]
+      - generic [ref=e111]:
+        - generic [ref=e112]: U
+        - generic [ref=e113]: M
+        - img [ref=e115]
+    - generic [ref=e120]:
+      - heading "Alerts" [level=6] [ref=e121]
+      - generic [ref=e122]:
+        - alert [ref=e123]:
+          - img [ref=e125]
+          - generic [ref=e127]: Media file loaded successfully!
+        - alert [ref=e128]:
+          - img [ref=e130]
+          - generic [ref=e132]: Low audio quality detected
+        - alert [ref=e133]:
+          - img [ref=e135]
+          - generic [ref=e137]: Failed to connect to media server
+        - alert [ref=e138]:
+          - img [ref=e140]
+          - generic [ref=e142]: New playlist feature available
+  - button "Media Controls" [ref=e143] [cursor=pointer]:
+    - img [ref=e145] [cursor=pointer]
+  - menu:
+    - menuitem "Play"
+    - menuitem "Pause"
+    - menuitem "Volume"
+    - menuitem "Settings"
+  - generic [ref=e147]:
+    - separator [ref=e148]
+    - paragraph [ref=e149]: MediaPlayer Theme Showcase - Light Mode
+```
