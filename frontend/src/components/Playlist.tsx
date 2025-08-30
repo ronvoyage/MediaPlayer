@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useTheme } from '@mui/material/styles';
 import {
   Box,
   Paper,
@@ -68,6 +69,7 @@ export const Playlist: React.FC<PlaylistProps> = ({
   onPlaylistExport,
   onPlaylistImport
 }) => {
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedItemIndex, setSelectedItemIndex] = useState<number>(-1);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -289,17 +291,24 @@ export const Playlist: React.FC<PlaylistProps> = ({
           values={mediaList}
           onReorder={handleReorder}
           style={{ width: '100%', minWidth: 0 }}
+          as="div"
         >
           {mediaList.map((item, index) => (
             <Reorder.Item
               key={`${item.name}-${index}`}
               value={item}
-              whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.04)' }}
+              whileHover={{ 
+                backgroundColor: theme.palette.mode === 'dark' 
+                  ? 'rgba(255, 255, 255, 0.08)' 
+                  : 'rgba(0, 0, 0, 0.04)' 
+              }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.2 }}
               style={{ width: '100%', minWidth: 0 }}
+              as="div"
             >
               <ListItem
+                component="div"
                 sx={{
                   border: index === currentIndex ? '2px solid' : '1px solid',
                   borderColor: index === currentIndex ? 'primary.main' : 'divider',
@@ -339,28 +348,28 @@ export const Playlist: React.FC<PlaylistProps> = ({
                     </Typography>
                   }
                   secondary={
-                    <Box sx={{ minWidth: 0, maxWidth: '100%' }}>
+                    <Typography 
+                      variant="caption" 
+                      component="div" 
+                      color="text.secondary" 
+                      sx={{ minWidth: 0, maxWidth: '100%' }}
+                    >
                       {item.metadata?.artist && (
-                        <Typography 
-                          variant="caption" 
-                          component="div" 
-                          color="text.secondary" 
-                          sx={{ 
-                            wordBreak: 'break-word',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
+                        <Box sx={{ 
+                          wordBreak: 'break-word',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          mb: 0.5
+                        }}>
                           {item.metadata.artist}
-                        </Typography>
+                        </Box>
                       )}
                       <Stack 
                         direction="row" 
                         spacing={1} 
                         alignItems="center" 
                         sx={{ 
-                          mt: 0.5, 
                           flexWrap: 'wrap',
                           minWidth: 0
                         }}
@@ -370,16 +379,16 @@ export const Playlist: React.FC<PlaylistProps> = ({
                           size="small"
                           variant="outlined"
                         />
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary" component="span">
                           {mediaPlayerService.formatFileSize(item.size)}
                         </Typography>
                         {item.duration && (
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" color="text.secondary" component="span">
                             {formatDuration(item.duration)}
                           </Typography>
                         )}
                       </Stack>
-                    </Box>
+                    </Typography>
                   }
                 />
 

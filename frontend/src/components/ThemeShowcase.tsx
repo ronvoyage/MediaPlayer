@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -19,6 +19,7 @@ import {
   RadioGroup,
   Select,
   MenuItem,
+  Menu,
   FormControl,
   InputLabel,
   Grid,
@@ -60,10 +61,13 @@ import {
   Brightness4,
   Brightness7,
   BugReport,
-  PlayCircle
+  PlayCircle,
+  Settings as SettingsIcon,
+  Info as InfoIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useTheme } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import { AnimatedLogo } from './AnimatedLogo';
 import { useLogger } from '../hooks/useLogger';
 import { LoggingDashboard } from './LoggingDashboard';
@@ -79,16 +83,61 @@ interface ThemeShowcaseProps {
 export function ThemeShowcase({ onToggleTheme, isDark, themeName, themeOptions = [], onSelectTheme }: ThemeShowcaseProps) {
   const theme = useTheme();
   const { logUserAction } = useLogger('ThemeShowcase');
+  const navigate = useNavigate();
   const [tabValue, setTabValue] = useState(0);
   const [sliderValue, setSliderValue] = useState(50);
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
   const [toggleValue, setToggleValue] = useState<string>('view1');
   const [accordionExpanded, setAccordionExpanded] = useState<string | false>(false);
   const [isLoggingDashboardOpen, setIsLoggingDashboardOpen] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('mp_profile_picture');
+    } catch {
+      return null;
+    }
+  });
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
     logUserAction('tab_changed', { tabIndex: newValue });
+  };
+
+  // Listen for profile picture changes
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'mp_profile_picture') {
+        setProfilePicture(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events for same-tab updates
+    const handleCustomStorageChange = ((e: CustomEvent) => {
+      if (e.detail.key === 'mp_profile_picture') {
+        setProfilePicture(e.detail.newValue);
+      }
+    }) as EventListener;
+
+    window.addEventListener('localStorageChange', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageChange', handleCustomStorageChange);
+    };
+  }, []);
+
+  // Menu handlers
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+    logUserAction('menu_opened', { source: 'theme_showcase' });
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    logUserAction('menu_closed', { source: 'theme_showcase' });
   };
 
   const actions = [
@@ -108,22 +157,48 @@ export function ThemeShowcase({ onToggleTheme, isDark, themeName, themeOptions =
       >
         <AppBar position="static" sx={{ mb: 4, borderRadius: 2 }}>
           <Toolbar sx={{ width: '100%', maxWidth: 1200, mx: 'auto' }}>
-            <AnimatedLogo size={40} showText />
+            <Box onClick={() => {
+              logUserAction('navigation', { from: 'theme_showcase', to: 'home', method: 'logo_click' });
+              navigate('/');
+            }} sx={{ cursor: 'pointer' }}>
+              <AnimatedLogo size={40} showText />
+            </Box>
             <Box sx={{ flexGrow: 1 }} />
             {/* Theme toggle in app bar */}
-            <IconButton color="inherit" onClick={onToggleTheme} aria-label="toggle theme">
+            <IconButton color="inherit" onClick={() => {
+              logUserAction('theme_toggle', { from: 'theme_showcase', mode: !isDark ? 'dark' : 'light' });
+              onToggleTheme?.();
+            }} aria-label="toggle theme">
               {isDark ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
-            <IconButton color="inherit" component="a" href="/mediaplayer" title="Open Media Player">
+            <IconButton color="inherit" onClick={() => {
+              logUserAction('navigation', { from: 'theme_showcase', to: 'media_player', method: 'icon_button' });
+              navigate('/');
+            }} title="Open Media Player">
               <PlayCircle />
             </IconButton>
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={() => {
+              logUserAction('search_clicked', { from: 'theme_showcase' });
+              // TODO: Implement search functionality
+            }}>
               <Search />
             </IconButton>
-            <IconButton color="inherit">
-              <AccountCircle />
+            <IconButton color="inherit" onClick={() => {
+              logUserAction('navigation', { from: 'theme_showcase', to: 'profile', method: 'icon_button' });
+              navigate('/profile');
+            }} sx={{ p: 0.5 }}>
+              <Avatar 
+                src={profilePicture || undefined}
+                sx={{ 
+                  width: 32, 
+                  height: 32,
+                  bgcolor: 'primary.main'
+                }}
+              >
+                <AccountCircle sx={{ fontSize: '1.5rem' }} />
+              </Avatar>
             </IconButton>
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={handleMenuOpen}>
               <MenuIcon />
             </IconButton>
             {/* Logging Dashboard Button (Development Only) */}
@@ -147,11 +222,11 @@ export function ThemeShowcase({ onToggleTheme, isDark, themeName, themeOptions =
         transition={{ delay: 0.2, duration: 0.6 }}
       >
         <Breadcrumbs sx={{ mb: 3 }}>
-          <Link underline="hover" color="inherit" href="#">
+          <Link underline="hover" color="inherit" href="/">
             <Home sx={{ mr: 0.5, fontSize: 'inherit' }} />
-            Home
+            MediaPlayer
           </Link>
-          <Link underline="hover" color="inherit" href="#">
+          <Link underline="hover" color="inherit" href="/showcase">
             Showcase
           </Link>
           <Typography color="text.primary">Theme Demo</Typography>
@@ -595,6 +670,55 @@ export function ThemeShowcase({ onToggleTheme, isDark, themeName, themeOptions =
           />
         ))}
       </SpeedDial>
+
+      {/* Dropdown Menu */}
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+        sx={{
+          '& .MuiPaper-root': {
+            background: (theme) => 
+              theme.palette.mode === 'dark' 
+                ? 'rgba(30, 30, 30, 0.95)' 
+                : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            border: (theme) => 
+              theme.palette.mode === 'dark'
+                ? '1px solid rgba(255, 255, 255, 0.1)'
+                : '1px solid rgba(0, 0, 0, 0.1)',
+            boxShadow: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '0 8px 32px rgba(0, 0, 0, 0.4)'
+                : '0 8px 32px rgba(0, 0, 0, 0.1)'
+          }
+        }}
+      >
+        <MenuItem onClick={() => { 
+          logUserAction('navigation', { from: 'theme_showcase', to: 'media_player' }); 
+          navigate('/'); 
+          handleMenuClose(); 
+        }}>
+          <PlayCircle sx={{ mr: 2 }} />
+          Media Player
+        </MenuItem>
+        <MenuItem onClick={() => { 
+          logUserAction('navigation', { from: 'theme_showcase', to: 'settings' }); 
+          navigate('/settings'); 
+          handleMenuClose(); 
+        }}>
+          <SettingsIcon sx={{ mr: 2 }} />
+          Settings
+        </MenuItem>
+        <MenuItem onClick={() => { 
+          logUserAction('navigation', { from: 'theme_showcase', to: 'about' }); 
+          navigate('/about'); 
+          handleMenuClose(); 
+        }}>
+          <InfoIcon sx={{ mr: 2 }} />
+          About
+        </MenuItem>
+      </Menu>
 
       {/* Logging Dashboard */}
       <LoggingDashboard 

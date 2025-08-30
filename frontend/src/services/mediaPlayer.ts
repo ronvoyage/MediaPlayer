@@ -64,6 +64,8 @@ export class MediaPlayerService {
     return this.supportedFormats.has(mimeType);
   }
 
+
+
   /**
    * Get supported formats
    */
@@ -125,7 +127,7 @@ export class MediaPlayerService {
       const url = URL.createObjectURL(file);
       const element = file.type.startsWith('audio/') 
         ? new Audio() 
-        : new HTMLVideoElement();
+        : document.createElement('video');
 
       const timeout = setTimeout(() => {
         reject(new Error('Metadata extraction timeout'));
@@ -391,6 +393,37 @@ export class MediaPlayerService {
     }
 
     return stats;
+  }
+
+  /**
+   * Test if a media file can be loaded
+   */
+  public async testMediaLoading(url: string, type: string): Promise<{ success: boolean; error?: string; duration?: number }> {
+    return new Promise((resolve) => {
+      const element = type.startsWith('audio/') 
+        ? new Audio() 
+        : document.createElement('video');
+
+      const timeout = setTimeout(() => {
+        element.remove();
+        resolve({ success: false, error: 'Loading timeout' });
+      }, 15000);
+
+      element.onloadedmetadata = () => {
+        clearTimeout(timeout);
+        const duration = element.duration || 0;
+        element.remove();
+        resolve({ success: true, duration });
+      };
+
+      element.onerror = () => {
+        clearTimeout(timeout);
+        element.remove();
+        resolve({ success: false, error: 'Failed to load media' });
+      };
+
+      element.src = url;
+    });
   }
 }
 

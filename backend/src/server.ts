@@ -1,129 +1,148 @@
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
 import { logger } from './services/logger';
+import type { LogEntry } from './types/logging';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Security middleware
-app.use(helmet());
+// Middleware
 app.use(cors());
-
-// HTTP request logging
-app.use(morgan('combined', {
-  stream: {
-    write: (message: string) => {
-      logger.info(message.trim(), { component: 'http' });
-    }
-  }
-}));
-
-// Body parsing middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Request logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    logger.apiRequest(req, duration, res.statusCode);
+  });
+  
+  next();
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  logger.info('Health check requested', { 
-    component: 'health',
-    metadata: { ip: req.ip, userAgent: req.get('User-Agent') }
-  });
-  res.json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString(),
-    service: 'MediaPlayer API'
-  });
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Root endpoint
-app.get('/', (req, res) => {
-  logger.info('Root endpoint accessed', { 
-    component: 'api',
-    metadata: { ip: req.ip }
-  });
-  res.json({ 
-    message: 'MediaPlayer API Server',
-    version: '1.0.0',
-    endpoints: {
-      health: '/health',
-      logs: '/api/logs'
-    }
-  });
-});
-
-// Logging endpoint for frontend
-app.post('/api/logs', (req, res) => {
-  const { level, message, metadata } = req.body;
-  
+// Logging endpoint
+app.post('/api/v1/logs', (req, res) => {
   try {
-    switch (level) {
-      case 'error':
-        logger.error(message, metadata);
-        break;
-      case 'warn':
-        logger.warn(message, metadata);
+    const logEntry: LogEntry = req.body;
+    
+    // Validate log entry
+    if (!logEntry.message || !logEntry.level || !logEntry.service) {
+      return res.status(400).json({ error: 'Invalid log entry' });
+    }
+
+    // Log to backend logger
+    switch (logEntry.level) {
+      case 'debug':
+        logger.debug(logEntry.message, {
+          component: logEntry.component,
+          action: logEntry.action,
+          metadata: logEntry.metadata,
+          error: logEntry.error,
+          duration: logEntry.duration,
+          performance: logEntry.performance,
+          security: logEntry.security
+        });
         break;
       case 'info':
-        logger.info(message, metadata);
+        logger.info(logEntry.message, {
+          component: logEntry.component,
+          action: logEntry.action,
+          metadata: logEntry.metadata,
+          duration: logEntry.duration,
+          performance: logEntry.performance
+        });
+        break;
+      case 'warn':
+        logger.warn(logEntry.message, {
+          component: logEntry.component,
+          action: logEntry.action,
+          metadata: logEntry.metadata,
+          security: logEntry.security
+        });
+        break;
+      case 'error':
+        logger.error(logEntry.message, logEntry.error ? new Error(logEntry.error.message) : undefined, {
+          component: logEntry.component,
+          action: logEntry.action,
+          metadata: logEntry.metadata
+        });
+        break;
+      case 'fatal':
+        logger.fatal(logEntry.message, logEntry.error ? new Error(logEntry.error.message) : undefined, {
+          component: logEntry.component,
+          action: logEntry.action,
+          metadata: logEntry.metadata
+        });
         break;
       default:
-        logger.info(message, metadata);
+        logger.warn(`Unknown log level: ${logEntry.level}`, {
+          component: 'API',
+          action: 'unknown_log_level',
+          metadata: { receivedLevel: logEntry.level }
+        });
     }
-    
-    res.json({ success: true });
+
+    return res.status(200).json({ success: true });
   } catch (error) {
-    logger.error('Error processing log request', error instanceof Error ? error : new Error('Unknown error'), {
-      component: 'api'
+    logger.error('Failed to process log entry', error as Error, {
+      component: 'API',
+      action: 'log_processing_error',
+      metadata: { body: req.body }
     });
-    res.status(500).json({ success: false, error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.error('Unhandled error', err, {
-    component: 'api',
+    component: 'API',
+    action: 'unhandled_error',
     metadata: {
-      url: req.url,
-      method: req.method
-    }
-  });
-  
-  res.status(500).json({ 
-    error: 'Internal server error',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  logger.warn('404 - Route not found', { 
-    component: 'api',
-    metadata: {
-      url: req.url, 
       method: req.method,
+      path: req.path,
+      userAgent: req.get('User-Agent'),
       ip: req.ip
     }
   });
   
-  res.status(404).json({ 
-    error: 'Route not found',
-    timestamp: new Date().toISOString()
-  });
+  res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server
-app.listen(PORT, () => {
-  logger.info(`MediaPlayer API server started`, { 
-    component: 'server',
+// 404 handler
+app.use('*', (req, res) => {
+  logger.warn('Route not found', {
+    component: 'API',
+    action: 'route_not_found',
     metadata: {
-      port: PORT, 
-      environment: process.env.NODE_ENV || 'development',
-      timestamp: new Date().toISOString()
+      method: req.method,
+      path: req.path,
+      userAgent: req.get('User-Agent'),
+      ip: req.ip
     }
   });
+  
+  res.status(404).json({ error: 'Route not found' });
 });
 
-export default app;
+// Export for testing
+export { app as server };
+
+// Start server only if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    logger.info(`Backend server running on port ${PORT}`, {
+      component: 'Server',
+      action: 'server_started',
+      metadata: { port: PORT, environment: process.env.NODE_ENV || 'development' }
+    });
+  });
+}
+

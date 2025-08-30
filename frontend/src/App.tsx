@@ -4,7 +4,13 @@ import { CssBaseline, Box } from '@mui/material';
 import { getTheme, themeOptions, type ThemeName } from './theme/themes';
 import { ThemeShowcase } from './components/ThemeShowcase';
 import { MediaPlayer } from './components/MediaPlayer';
+import { Showcase } from './components/Showcase';
+import { Settings } from './components/Settings';
+import { About } from './components/About';
+import { UserProfile } from './components/UserProfile';
+import { FloatingMusicPlayer } from './components/FloatingMusicPlayer';
 import { useLogger } from './hooks/useLogger';
+import { useGlobalMusicPlayer } from './hooks/useGlobalMusicPlayer';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ApprovalPage } from './components/approval/ApprovalPage';
 
@@ -20,12 +26,43 @@ function App() {
     }
   });
   const { logUserAction } = useLogger('App');
+  
+  // Global music player
+  const globalPlayer = useGlobalMusicPlayer();
   const [themeName, setThemeName] = useState<ThemeName>(() => {
     try {
       const stored = localStorage.getItem('mp_theme_name');
       return (stored as ThemeName) || 'classic';
     } catch {
       return 'classic';
+    }
+  });
+
+  // Settings state
+  const [volume, setVolume] = useState<number>(() => {
+    try {
+      const stored = localStorage.getItem('mp_volume');
+      return stored ? parseInt(stored, 10) : 50;
+    } catch {
+      return 50;
+    }
+  });
+
+  const [autoplay, setAutoplay] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem('mp_autoplay');
+      return stored ? stored === 'true' : false;
+    } catch {
+      return false;
+    }
+  });
+
+  const [quality, setQuality] = useState<string>(() => {
+    try {
+      const stored = localStorage.getItem('mp_quality');
+      return stored || 'auto';
+    } catch {
+      return 'auto';
     }
   });
 
@@ -59,7 +96,7 @@ function App() {
               <Route
                 path="/"
                 element={(
-                  <ThemeShowcase
+                  <MediaPlayer
                     onToggleTheme={toggleDarkMode}
                     isDark={darkMode}
                     themeName={themeName}
@@ -68,11 +105,66 @@ function App() {
                   />
                 )}
               />
+              <Route path="/showcase" element={(
+                <ThemeShowcase
+                  onToggleTheme={toggleDarkMode}
+                  isDark={darkMode}
+                  themeName={themeName}
+                  themeOptions={themeOptions}
+                  onSelectTheme={setThemeByName}
+                />
+              )} />
+              <Route path="/settings" element={(
+                <Settings
+                  onToggleTheme={toggleDarkMode}
+                  isDark={darkMode}
+                  themeName={themeName}
+                  themeOptions={themeOptions}
+                  onSelectTheme={setThemeByName}
+                  volume={volume}
+                  onVolumeChange={setVolume}
+                  autoplay={autoplay}
+                  onAutoplayChange={setAutoplay}
+                  quality={quality}
+                  onQualityChange={setQuality}
+                />
+              )} />
+              <Route path="/about" element={<About />} />
+              <Route path="/profile" element={<UserProfile />} />
               <Route path="/mediaplayer" element={<MediaPlayer />} />
               <Route path="/approval" element={<ApprovalPage />} />
             </Routes>
           </Box>
         </Box>
+
+        {/* Global Floating Music Player */}
+        <FloatingMusicPlayer
+          state={{
+            isPlaying: globalPlayer.state.isPlaying,
+            currentTime: globalPlayer.state.currentTime,
+            duration: globalPlayer.state.duration,
+            volume: globalPlayer.state.volume,
+            isMuted: globalPlayer.state.isMuted,
+            isExpanded: globalPlayer.state.isExpanded,
+            currentTrack: globalPlayer.state.currentTrack,
+            playlist: globalPlayer.state.playlist,
+            currentIndex: globalPlayer.state.currentIndex,
+            isVisible: globalPlayer.state.isVisible,
+            shuffle: globalPlayer.state.shuffle,
+            repeat: globalPlayer.state.repeat,
+          }}
+          onPlay={globalPlayer.play}
+          onPause={globalPlayer.pause}
+          onNext={globalPlayer.next}
+          onPrevious={globalPlayer.previous}
+          onSeek={globalPlayer.seek}
+          onVolumeChange={globalPlayer.setVolume}
+          onToggleMute={globalPlayer.toggleMute}
+          onToggleExpanded={globalPlayer.toggleExpanded}
+          onClose={globalPlayer.hide}
+          onToggleShuffle={globalPlayer.toggleShuffle}
+          onToggleRepeat={globalPlayer.toggleRepeat}
+        />
       </BrowserRouter>
     </ThemeProvider>
   );

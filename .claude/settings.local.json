@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(quickstart.bat)",
+      "Bash(./quickstart.bat)",
+      "Bash(where npm)",
+      "Bash(npm:*)",
+      "Bash(start \"MediaPlayer Frontend\" powershell -ExecutionPolicy Bypass -NoExit -Command \"Set-Location ''C:\\Users\\ron_l\\Projects\\MediaPlayer\\frontend''; $env:PORT=''3200''; Write-Host ''Frontend starting on port 3200...''; npm run start\")",
+      "Bash(tasklist)",
+      "Bash(taskkill:*)",
+      "Bash(where npm.cmd)",
+      "Bash(where npm.exe)",
+      "Bash(start \"MediaPlayer Backend\" powershell -ExecutionPolicy Bypass -NoExit -Command \"& {Set-Location ''C:\\Users\\ron_l\\Projects\\MediaPlayer\\backend''; Write-Host ''Backend starting on port 3201...''; npm run start}\")",
+      "Bash(start \"MediaPlayer Frontend\" powershell -ExecutionPolicy Bypass -NoExit -Command \"& {Set-Location ''C:\\Users\\ron_l\\Projects\\MediaPlayer\\frontend''; Write-Host ''Frontend starting on port 3200...''; npm run start}\")",
+      "Bash(test_powershell.bat)",
+      "Bash(start \"Test Backend\":*)",
+      "Bash(timeout:*)",
+      "Bash(powershell:*)",
+      "Bash(curl:*)",
+      "Bash(npx tsc:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

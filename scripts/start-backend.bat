@@ -1,0 +1,2 @@
+@echo off
+start "MediaPlayer Backend" powershell -ExecutionPolicy Bypass -NoExit -Command "cd '%~dp0..\backend'; $env:PORT='3201'; $env:NODE_ENV='development'; Write-Host 'Backend starting on port 3201...'; npm run start"

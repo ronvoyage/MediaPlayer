@@ -43,6 +43,10 @@ export interface BackendLogOptions {
     stack: string;
     code?: string;
   };
+  performance?: {
+    memory: number;
+    timing: object;
+  };
   security?: {
     ip: string;
     userAgent: string;
